@@ -1,4 +1,4 @@
-package project;
+package src.project;
 
 import java.util.List;
 

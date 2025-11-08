@@ -1,4 +1,4 @@
-package project;
+package src.project;
 
 public class PermissionHandler {
 	
