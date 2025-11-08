@@ -1,4 +1,4 @@
-package src.project;
+package project;
 
 import static org.junit.jupiter.api.Assertions.*;
 import java.time.LocalDate;
@@ -30,25 +30,45 @@ public class ReceiptHandlerTest {
     @Test
     void testApproveReceipt() {
         handler.createReceipt(salesperson, 50.0, LocalDate.now(), "third receipt", "photo 3");
-        handler.handleReceipt(accountant, 1);
-        handler.approveReceipt(manager, 1);
+        int id = handler.listReceipts().get(0).getReceiptId();
+        handler.handleReceipt(accountant, id);
+        handler.approveReceipt(manager, id);
         assertEquals(Status.APPROVED, handler.listReceipts().get(0).getStatus());
     }
 
     @Test
     void testRejectReceiptThrowsIfUnauthorized() {
         handler.createReceipt(salesperson, 50.0, LocalDate.now(), "third receipt", "photo 3");
-        handler.handleReceipt(accountant, 1);
+        int id = handler.listReceipts().get(0).getReceiptId();
+        handler.handleReceipt(accountant, id);
         assertThrows(SecurityException.class, () -> {
-            handler.rejectReceipt(salesperson, 1, "rejected...");
+            handler.rejectReceipt(salesperson, id, "rejected...");
         });
     }
 
     @Test
     void testCannotBeAcceptedBeforeHandling() {
          handler.createReceipt(salesperson, 50.0, LocalDate.now(), "third receipt", "photo 3");
+        int id = handler.listReceipts().get(0).getReceiptId();
         assertThrows(SecurityException.class, () -> {
-            handler.approveReceipt(manager, 1);
+            handler.approveReceipt(manager, id);
+        });
+    }
+
+    @Test
+    void testApproveRejectHandleThrowWhenReceiptMissing() {
+        // use an id that doesn't exist
+        int missingId = 99999;
+        assertThrows(IllegalArgumentException.class, () -> {
+            handler.approveReceipt(manager, missingId);
+        });
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            handler.rejectReceipt(manager, missingId, "nope");
+        });
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            handler.handleReceipt(accountant, missingId);
         });
     }
 }

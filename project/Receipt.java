@@ -99,6 +99,10 @@ public class Receipt {
 		return this.description;
 	}
 	
+	public LocalDate getStatusByManagerAt() {
+		return this.statusByManagerAt;
+	}
+	
 	public String getPhotoPath() {
 		
 		return this.photoPath;

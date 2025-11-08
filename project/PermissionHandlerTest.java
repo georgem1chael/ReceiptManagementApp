@@ -1,4 +1,4 @@
-package src.project;
+package project;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -41,6 +41,20 @@ public class PermissionHandlerTest {
     void testSubmitterCannotApproveOwn() {
         Receipt rec = new Receipt(manager, 100, LocalDate.now(), "second receipt", "photo 2");
         assertFalse(handler.canApprove(manager, rec));
+    }
+
+    @Test
+    void testCanHandleCases() {
+        // accountant should be able to handle receipts not submitted by them
+        Receipt rec = new Receipt(salesperson, 200, LocalDate.now(), "r", "p");
+        assertTrue(handler.canHandle(accountant, rec));
+
+        // accountant cannot handle their own submitted receipt
+        Receipt rec2 = new Receipt(accountant, 50, LocalDate.now(), "own", "p2");
+        assertFalse(handler.canHandle(accountant, rec2));
+
+        // salesperson (non-accountant) cannot handle
+        assertFalse(handler.canHandle(salesperson, rec));
     }
 
     

@@ -24,55 +24,50 @@ public class ReceiptHandler{
 	}
 	
 	public void approveReceipt(User user, int receiptId) {
-		
 		Receipt rec = findReceiptById(receiptId);
-		
-		if(rec.getAccountant() == null) {
-			
-			System.out.println("Can't approve receipt if it hasn't been handled by an Accountant yet!");
-			return;
+		if (rec == null) {
+			throw new IllegalArgumentException("Receipt " + receiptId + " not found");
 		}
-		
-		
-		if(!permissionHandler.canApprove(user, rec)) {
-			
-            System.out.println("User " + user.getUsername()+ " (" + user.getRole() + ")"  + " is not allowed to approve receipts.");
-            return;
+
+		if (rec.getAccountant() == null) {
+			throw new SecurityException("Can't approve receipt if it hasn't been handled by an Accountant yet!");
 		}
-			
+
+		if (!permissionHandler.canApprove(user, rec)) {
+			throw new SecurityException("User " + user.getUsername() + " (" + user.getRole() + ") is not allowed to approve receipts.");
+		}
+
 		rec.approve(user);
-		
-		}
+	}
 		
 	
 	public void rejectReceipt(User user, int receiptId, String reason) {
-		
 		Receipt rec = findReceiptById(receiptId);
-		
-		if(rec.getAccountant() == null) {
-			
-			System.out.println("Can't reject receipt if it hasn't been handled by an Accountant yet!");
-			return;
+		if (rec == null) {
+			throw new IllegalArgumentException("Receipt " + receiptId + " not found");
 		}
-		
-		if(!permissionHandler.canApprove(user, rec)) {
-			
-            System.out.println("User " + user.getUsername()+ " (" + user.getRole() + ")" + " is not allowed to approve receipts.");
-		}			
-		
+
+		if (rec.getAccountant() == null) {
+			throw new SecurityException("Can't reject receipt if it hasn't been handled by an Accountant yet!");
+		}
+
+		if (!permissionHandler.canApprove(user, rec)) {
+			throw new SecurityException("User " + user.getUsername() + " (" + user.getRole() + ") is not allowed to approve receipts.");
+		}
+
 		rec.reject(user, reason);
-		
 	}
 	
 	public void handleReceipt(User user, int receiptId) {
-		
 		Receipt rec = findReceiptById(receiptId);
-		
-		if(!permissionHandler.canHandle(user, rec)) {
-			
-			System.out.println("User " + user.getUsername() + " (" + user.getRole() + ")" + " is not allowed to handle receipts.");
+		if (rec == null) {
+			throw new IllegalArgumentException("Receipt " + receiptId + " not found");
 		}
-		
+
+		if (!permissionHandler.canHandle(user, rec)) {
+			throw new SecurityException("User " + user.getUsername() + " (" + user.getRole() + ") is not allowed to handle receipts.");
+		}
+
 		rec.handle(user);
 	}
 	
@@ -81,7 +76,7 @@ public class ReceiptHandler{
 		return receipts;
 	}
 	
-	private Receipt findReceiptById(int receiptId) {
+	public Receipt findReceiptById(int receiptId) {
 		
 	    for (Receipt r : receipts) {
 	    	
