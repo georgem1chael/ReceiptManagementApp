@@ -6,8 +6,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class ReceiptTest {
-   private User manager;
-   private User accountant;
+
+    private User manager;
+    private User accountant;
     private User salesperson;
     private Receipt receipt;
 
@@ -17,6 +18,11 @@ public class ReceiptTest {
         accountant = new User("charlie", Role.ACCOUNTANT);
         salesperson = new User("bob", Role.SALESPERSON);
         receipt = new Receipt(salesperson, 120.0, LocalDate.now(), "first receipt", "photo 1");
+    }
+
+    @Test
+    void testCreatingReceiptSetsStatusToPending() {
+        assertEquals(receipt.getStatus(), Status.PENDING);
     }
 
     @Test
@@ -74,3 +80,4 @@ public class ReceiptTest {
         assertEquals(Status.REJECTED, r2.getStatus());
     }
 }
+
