@@ -1,3 +1,4 @@
+package project;
 public class PermissionHandler {
 	
 	public boolean canApprove(User user, Receipt rec) {

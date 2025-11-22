@@ -1,5 +1,8 @@
+package project;
 import static org.junit.jupiter.api.Assertions.*;
 import java.time.LocalDate;
+import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -9,6 +12,7 @@ public class ReceiptHandlerTest {
     private User manager;
     private User accountant;
     private User salesperson;
+    private User admin;
 
     @BeforeEach
     void setUp() {
@@ -127,4 +131,65 @@ public class ReceiptHandlerTest {
 
         assertNotEquals(rec1.getStatus(), rec2.getStatus());
     }
+
+    @Test
+    void testListReceiptForSalesperson(){
+        User salesperson2 = new User("alice", Role.SALESPERSON, "password");
+        handler.createReceipt(salesperson, 100.0, LocalDate.now(), "receipt1", "photo1");
+        handler.createReceipt(salesperson, 200.0, LocalDate.now(), "receipt2", "photo2");
+        List<Receipt> salesperson1Receipts = handler.listReceipt(salesperson);
+        assertEquals(2, salesperson1Receipts.size());
+        List<Receipt> salesperson2Receipts = handler.listReceipt(salesperson2);
+        assertEquals(0, salesperson2Receipts.size());
+    }
+
+    @Test
+    void testListReceiptForAccountant(){
+        handler.createReceipt(salesperson, 100.0, LocalDate.now(), "pending receipt", "photo1");
+        handler.createReceipt(salesperson, 200.0, LocalDate.now(), "will be handled", "photo2");  
+        handler.createReceipt(salesperson, 300.0, LocalDate.now(), "will be approved", "photo3");
+        Receipt rec1 = handler.listReceipts().get(0);  // PENDING
+        Receipt rec2 = handler.listReceipts().get(1);  // HANDLED
+        Receipt rec3 = handler.listReceipts().get(2);  // WAPPROVED
+        // rec1 stays PENDING
+        handler.handleReceipt(accountant, rec2.getReceiptId());  // HANDLED
+        handler.handleReceipt(accountant, rec3.getReceiptId());  // HANDLED first
+        handler.approveReceipt(manager, rec3.getReceiptId());    // APPROVED
+        List<Receipt> accountantReceipts = handler.listReceipt(accountant);
+        assertEquals(1, accountantReceipts.size());
+        assertEquals("pending receipt", accountantReceipts.get(0).getDescription());
+    }
+
+    @Test
+    void testListReceiptForManager(){
+        // Create receipts by salesperson
+        handler.createReceipt(salesperson, 100.0, LocalDate.now(), "pending receipt", "photo1");
+        handler.createReceipt(salesperson, 200.0, LocalDate.now(), "will be handled", "photo2");
+        handler.createReceipt(salesperson, 300.0, LocalDate.now(), "will be approved", "photo3");
+        
+        Receipt rec1 = handler.listReceipts().get(0);  // PENDING (manager shouldn't see)
+        Receipt rec2 = handler.listReceipts().get(1);  // HANDLED (manager SHOULD see)
+        Receipt rec3 = handler.listReceipts().get(2);  // APPROVED (manager shouldn't see)
+        
+        // rec1 stays PENDING
+        handler.handleReceipt(accountant, rec2.getReceiptId());  // HANDLED
+        handler.handleReceipt(accountant, rec3.getReceiptId());  // ANDLED first
+        handler.approveReceipt(manager, rec3.getReceiptId());    // rAPPROVED
+        
+        // Manager should only see rec2 (HANDLED + not submitted by manager)
+        List<Receipt> managerReceipts = handler.listReceipt(manager);
+        assertEquals(1, managerReceipts.size());
+        assertEquals("will be handled", managerReceipts.get(0).getDescription());
+    }
+
+    @Test
+    void testListReceiptForAdministrator(){
+        User admin = new User("admin", Role.ADMIN, "password");
+        handler.createReceipt(salesperson, 100.0, LocalDate.now(), "receipt1", "photo1");
+        handler.createReceipt(salesperson, 200.0, LocalDate.now(), "receipt2", "photo2");
+        
+        // Administrator should get SecurityException
+        assertThrows(SecurityException.class, () -> handler.listReceipt(admin));
+    }
+
 }

@@ -1,3 +1,4 @@
+package project;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -91,10 +92,14 @@ public class ReceiptHandler{
 
 		else if(user.getRole() == Role.ACCOUNTANT){
 			
+			// Return all receipts that an accountant can see/work with
 			for(Receipt r : receipts){
 				
-				if(r.getStatus() == Status.PENDING)
+				// Pending receipts (not yet handled) or receipts this accountant has handled
+				if(r.getStatus() == Status.PENDING || 
+				   (r.getAccountant() != null && r.getAccountant().equals(user))) {
 					newList.add(r);
+				}
 			}
 
 			return newList;
@@ -102,10 +107,14 @@ public class ReceiptHandler{
 
 		else if(user.getRole() == Role.MANAGER){
 			
+			// Return all receipts that managers can see/work with
 			for(Receipt r : receipts){
 				
-				if(r.getStatus() == Status.HANDLED && !r.getSubmitter().equals(user))
+				// All handled receipts (ready for review) and receipts already approved/rejected
+				if((r.getStatus() == Status.HANDLED || r.getStatus() == Status.APPROVED || r.getStatus() == Status.REJECTED) 
+				   && !r.getSubmitter().equals(user)) {
 					newList.add(r);
+				}
 			}
 
 			return newList;

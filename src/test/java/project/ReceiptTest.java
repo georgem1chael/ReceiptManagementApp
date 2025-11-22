@@ -1,3 +1,4 @@
+package project;
 import static org.junit.jupiter.api.Assertions.*;
 import java.time.LocalDate;
 import org.junit.jupiter.api.BeforeEach;
@@ -76,5 +77,12 @@ public class ReceiptTest {
         r2.reject(manager, "nope");
         assertEquals("nope", r2.getReason());
         assertEquals(Status.REJECTED, r2.getStatus());
+    }
+
+    @Test
+    void testGetDate() {
+        LocalDate testDate = LocalDate.of(2023, 12, 15);
+        Receipt testReceipt = new Receipt(salesperson, 50.0, testDate, "test receipt", "photo");
+        assertEquals(testDate, testReceipt.getDate());
     }
 }

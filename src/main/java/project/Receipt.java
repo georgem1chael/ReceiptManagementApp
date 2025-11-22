@@ -1,3 +1,4 @@
+package project;
 import java.time.LocalDate;
 
 public class Receipt {
