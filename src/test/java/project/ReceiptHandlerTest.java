@@ -50,12 +50,91 @@ public class ReceiptHandlerTest {
     }
 
     @Test
+    void testReceiptCantBeHandledByManager(){
+        handler.createReceipt(salesperson, 50.0, LocalDate.now(), "third receipt", "photo 3");
+        Receipt rec = handler.listReceipts().get(0);
+
+        assertThrows(SecurityException.class, () -> handler.handleReceipt(manager, rec.getReceiptId()));
+        assertNull(rec.getAccountant());
+    }
+
+    @Test
+    void testReceiptCantBeApprovedBySalesperson(){
+        handler.createReceipt(salesperson, 50.0, LocalDate.now(), "third receipt", "photo 3");
+        Receipt rec = handler.listReceipts().get(0);
+
+        rec.handle(accountant);
+
+        assertThrows(SecurityException.class, () -> handler.approveReceipt(salesperson, rec.getReceiptId()));
+        assertNull(rec.getStatusChangedBy());
+    }
+
+    @Test
+    void testReceiptCantBeRejectedBySalesperson(){
+        handler.createReceipt(salesperson, 50.0, LocalDate.now(), "third receipt", "photo 3");
+        Receipt rec = handler.listReceipts().get(0);
+
+        rec.handle(accountant);
+
+        assertThrows(SecurityException.class, () -> handler.rejectReceipt(salesperson, rec.getReceiptId(), "rejected..."));
+        assertNull(rec.getStatusChangedBy());
+    }
+
+    @Test
+    void testReceiptCantBeApprovedByAccountant(){
+        handler.createReceipt(salesperson, 50.0, LocalDate.now(), "third receipt", "photo 3");
+        Receipt rec = handler.listReceipts().get(0);
+
+        User acc = new User("acc", Role.ACCOUNTANT, "password");
+
+        rec.handle(accountant);
+
+        assertThrows(SecurityException.class, () -> handler.approveReceipt(acc, rec.getReceiptId()));
+        assertNull(rec.getStatusChangedBy());
+    }
+
+    @Test
+    void testReceiptCantBeRejectedByAccountant(){
+        handler.createReceipt(salesperson, 50.0, LocalDate.now(), "third receipt", "photo 3");
+        Receipt rec = handler.listReceipts().get(0);
+
+        User acc = new User("acc", Role.ACCOUNTANT, "password");
+
+        rec.handle(accountant);
+
+        assertThrows(SecurityException.class, () -> handler.rejectReceipt(acc, rec.getReceiptId(), "rejected..."));
+        assertNull(rec.getStatusChangedBy());
+    }
+
+    @Test
     void testSamePersonCantHandleTheirReceipt() {
         handler.createReceipt(accountant, 50.0, LocalDate.now(), "third receipt", "photo 3");
         Receipt rec = handler.listReceipts().get(0);
 
         assertThrows(SecurityException.class, () -> handler.handleReceipt(accountant, rec.getReceiptId()));        
         assertNull(rec.getAccountant());
+    }
+
+    @Test
+    void testManagerCantApproveOwnReceipt(){
+        handler.createReceipt(manager, 50.0, LocalDate.now(), "third receipt", "photo 3");
+        Receipt rec = handler.listReceipts().get(0);
+
+        rec.handle(accountant);
+
+        assertThrows(SecurityException.class, () -> handler.approveReceipt(manager, rec.getReceiptId()));        
+        assertNull(rec.getStatusChangedBy());
+    }
+
+    @Test
+    void testManagerCantRejectOwnReceipt(){
+        handler.createReceipt(manager, 50.0, LocalDate.now(), "third receipt", "photo 3");
+        Receipt rec = handler.listReceipts().get(0);
+
+        rec.handle(accountant);
+
+        assertThrows(SecurityException.class, () -> handler.rejectReceipt(manager, rec.getReceiptId(), "rejected..."));        
+        assertNull(rec.getStatusChangedBy());
     }
 
     @Test
@@ -191,5 +270,42 @@ public class ReceiptHandlerTest {
         // Administrator should get SecurityException
         assertThrows(SecurityException.class, () -> handler.listReceipt(admin));
     }
+
+    @Test
+    void testApproveDoesNotOverwriteAccountant() {
+        handler.createReceipt(salesperson, 50.0, LocalDate.now(), "receipt", "photo");
+        Receipt rec = handler.listReceipts().get(0);
+
+        handler.handleReceipt(accountant, rec.getReceiptId());
+        handler.approveReceipt(manager, rec.getReceiptId());
+
+        assertEquals(accountant, rec.getAccountant());
+    }
+
+    @Test
+    void testRejectDoesNotOverwriteAccountant() {
+        handler.createReceipt(salesperson, 50.0, LocalDate.now(), "receipt", "photo");
+        Receipt rec = handler.listReceipts().get(0);
+
+        handler.handleReceipt(accountant, rec.getReceiptId());
+        handler.rejectReceipt(manager, rec.getReceiptId(), "bad");
+
+        assertEquals(accountant, rec.getAccountant());
+    }
+
+    @Test
+    void testRejectAllowsEmptyReason() {
+        handler.createReceipt(salesperson, 100, LocalDate.now(), "receipt", "photo");
+        Receipt rec = handler.listReceipts().get(0);
+        handler.handleReceipt(accountant, rec.getReceiptId());
+
+        handler.rejectReceipt(manager, rec.getReceiptId(), "");
+
+        assertEquals(Status.REJECTED, rec.getStatus());
+        assertEquals("", rec.getReason());
+    }
+
+
+
 
 }
