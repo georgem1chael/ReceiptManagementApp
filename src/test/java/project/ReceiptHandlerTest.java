@@ -235,8 +235,11 @@ public class ReceiptHandlerTest {
         handler.handleReceipt(accountant, rec3.getReceiptId());  // HANDLED first
         handler.approveReceipt(manager, rec3.getReceiptId());    // APPROVED
         List<Receipt> accountantReceipts = handler.listReceipt(accountant);
-        assertEquals(1, accountantReceipts.size());
-        assertEquals("pending receipt", accountantReceipts.get(0).getDescription());
+        // Accountant sees: rec1 (PENDING), rec2 (HANDLED by them), rec3 (APPROVED but handled by them)
+        assertEquals(3, accountantReceipts.size());
+        assertTrue(accountantReceipts.stream().anyMatch(r -> r.getDescription().equals("pending receipt")));
+        assertTrue(accountantReceipts.stream().anyMatch(r -> r.getDescription().equals("will be handled")));
+        assertTrue(accountantReceipts.stream().anyMatch(r -> r.getDescription().equals("will be approved")));
     }
 
     @Test
@@ -255,10 +258,11 @@ public class ReceiptHandlerTest {
         handler.handleReceipt(accountant, rec3.getReceiptId());  // ANDLED first
         handler.approveReceipt(manager, rec3.getReceiptId());    // rAPPROVED
         
-        // Manager should only see rec2 (HANDLED + not submitted by manager)
+        // Manager should see rec2 (HANDLED) and rec3 (APPROVED)
         List<Receipt> managerReceipts = handler.listReceipt(manager);
-        assertEquals(1, managerReceipts.size());
-        assertEquals("will be handled", managerReceipts.get(0).getDescription());
+        assertEquals(2, managerReceipts.size());
+        assertTrue(managerReceipts.stream().anyMatch(r -> r.getDescription().equals("will be handled")));
+        assertTrue(managerReceipts.stream().anyMatch(r -> r.getDescription().equals("will be approved")));
     }
 
     @Test

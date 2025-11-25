@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Receipt.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">receipt-management</a> &gt; <a href="index.source.html" class="el_package">project</a> &gt; <span class="el_source">Receipt.java</span></div><h1>Receipt.java</h1><pre class="source lang-java linenums">package project;
+import java.time.LocalDate;
+
+public class Receipt {
+	
+	private int receiptId;
+	private double amount;
+	private LocalDate date;
+	private String description;
+	private String photoPath;
+	private Status status;
+	private User submitter;
+	
+<span class="fc" id="L14">	private static int counter = 1;</span>
+	
+	private User accountantHandled;
+	private LocalDate accountantHandledAt;
+	
+	private User statusByManager;
+	private LocalDate statusByManagerAt;
+	private String rejectedBc;
+	
+<span class="fc" id="L23">	public Receipt (User salesperson, double amount, LocalDate date, String description, String photoPath) {</span>
+		
+<span class="fc" id="L25">		this.receiptId = counter++;</span>
+<span class="fc" id="L26">		this.amount = amount;</span>
+<span class="fc" id="L27">		this.date = date;</span>
+<span class="fc" id="L28">		this.description = description;</span>
+<span class="fc" id="L29">		this.photoPath = photoPath;</span>
+<span class="fc" id="L30">		this.status = Status.PENDING;</span>
+<span class="fc" id="L31">		this.submitter = salesperson;</span>
+<span class="fc" id="L32">	}</span>
+	
+	public void approve(User user) {					
+		
+<span class="fc" id="L36">		this.status = Status.APPROVED;</span>
+<span class="fc" id="L37">		this.statusByManager = user;</span>
+<span class="fc" id="L38">		this.statusByManagerAt = LocalDate.now();</span>
+		
+<span class="fc" id="L40">		System.out.println(&quot;Receipt &quot; + this.receiptId + &quot; approved!&quot;);</span>
+<span class="fc" id="L41">	}</span>
+	
+	public void reject(User user, String reason) {					
+		
+<span class="fc" id="L45">		this.status = Status.REJECTED;</span>
+<span class="fc" id="L46">		this.statusByManager = user;</span>
+<span class="fc" id="L47">		this.statusByManagerAt = LocalDate.now();</span>
+<span class="fc" id="L48">		this.rejectedBc = reason;</span>
+		
+<span class="fc" id="L50">		System.out.println(&quot;Receipt &quot; + this.receiptId + &quot; rejected.. \nReason: &quot; + this.rejectedBc);</span>
+<span class="fc" id="L51">	}</span>
+	
+	public void handle(User user) {
+		
+<span class="fc" id="L55">		this.accountantHandled = user;</span>
+<span class="fc" id="L56">		this.accountantHandledAt = LocalDate.now();</span>
+<span class="fc" id="L57">		this.status = Status.HANDLED;</span>
+		
+<span class="fc" id="L59">		System.out.println(&quot;Receipt &quot; + this.receiptId + &quot; handled!&quot;);</span>
+<span class="fc" id="L60">	}</span>
+	
+	public String getReason() {
+		
+<span class="fc" id="L64">		return this.rejectedBc;</span>
+	}
+	
+	public User getAccountant() {
+		
+<span class="fc" id="L69">		return this.accountantHandled;</span>
+	}
+	
+	public LocalDate getAccountantDate() {
+		
+<span class="fc" id="L74">		return this.accountantHandledAt;</span>
+	}
+	
+	public Status getStatus() {
+		
+<span class="fc" id="L79">		return this.status;</span>
+	}
+	
+	public int getReceiptId() {
+		
+<span class="fc" id="L84">		return this.receiptId;</span>
+	}
+	
+	public double getAmount() {
+		
+<span class="fc" id="L89">		return this.amount;</span>
+	}
+	
+	public LocalDate getDate() {
+		
+<span class="fc" id="L94">		return this.date;</span>
+	}
+	
+	public String getDescription() {
+		
+<span class="fc" id="L99">		return this.description;</span>
+	}
+	
+	public LocalDate getStatusByManagerAt() {
+<span class="fc" id="L103">		return this.statusByManagerAt;</span>
+	}
+	
+	public String getPhotoPath() {
+		
+<span class="fc" id="L108">		return this.photoPath;</span>
+	}
+	
+	public User getSubmitter() {
+		
+<span class="fc" id="L113">		return this.submitter;</span>
+	}
+	
+	public User getStatusChangedBy() {
+		
+<span class="fc" id="L118">		return this.statusByManager;</span>
+	}
+	
+	public LocalDate statusChangedAt() {
+		
+<span class="fc" id="L123">		return this.statusByManagerAt;</span>
+	}
+	
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

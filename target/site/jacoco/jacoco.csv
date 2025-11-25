@@ -1,0 +1,9 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+receipt-management,project,Role,0,27,0,0,0,5,0,1,0,1
+receipt-management,project,Status,0,27,0,0,0,5,0,1,0,1
+receipt-management,project,Receipt,0,120,0,0,0,39,0,18,0,18
+receipt-management,project,ReceiptHandler,0,275,4,44,0,61,4,28,0,8
+receipt-management,project,PermissionHandler,0,39,1,11,0,11,1,8,0,3
+receipt-management,project,ReceiptManagementApp,2644,0,113,0,522,0,98,0,40,0
+receipt-management,project,UserHandler,114,0,16,0,28,0,15,0,7,0
+receipt-management,project,User,7,18,0,0,3,7,2,3,2,3
