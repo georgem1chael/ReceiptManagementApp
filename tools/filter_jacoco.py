@@ -1,146 +1,102 @@
 #!/usr/bin/env python3
 """
-Filter JaCoCo coverage report to show only source files (excluding test files).
+Filter a JaCoCo XML report to produce a compact HTML listing only classes that have a test file in the repo.
+Usage:
+  python3 tools/filter_jacoco.py --jacoco target/site/jacoco/jacoco.xml --srcdir project --out target/site/jacoco/filtered_index.html
 """
-import xml.etree.ElementTree as ET
 import argparse
 import os
-from pathlib import Path
+import xml.etree.ElementTree as ET
 
 
-def filter_jacoco(jacoco_xml, srcdir, output_html):
-    """Filter JaCoCo XML report and generate HTML output."""
-    
-    # Parse the JaCoCo XML report
-    tree = ET.parse(jacoco_xml)
+def find_test_targets(srcdir):
+    """Return set of source filenames (e.g. 'Receipt.java') that have a matching *Test.java in srcdir."""
+    targets = set()
+    for root, _, files in os.walk(srcdir):
+        for f in files:
+            if f.endswith("Test.java"):
+                base = f[:-len("Test.java")]
+                targets.add(base + ".java")
+    return targets
+
+
+def parse_jacoco(jacoco_xml_path):
+    tree = ET.parse(jacoco_xml_path)
     root = tree.getroot()
-    
-    # Get list of test files to determine which classes have tests
-    test_dir = Path(srcdir)
-    test_files = set()
-    if test_dir.exists():
-        for test_file in test_dir.glob('*Test.java'):
-            # Extract the base class name (remove 'Test.java' suffix)
-            base_name = test_file.stem.replace('Test', '')
-            test_files.add(base_name + '.java')
-    
-    # Get all packages
-    packages = root.findall('.//package')
-    
-    total_covered = 0
-    total_missed = 0
-    
-    html_content = """<!DOCTYPE html>
-<html>
-<head>
-    <title>Filtered JaCoCo Coverage Report</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        h1 { color: #333; }
-        table { border-collapse: collapse; width: 100%; margin-top: 20px; }
-        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
-        th { background-color: #4CAF50; color: white; }
-        tr:nth-child(even) { background-color: #f2f2f2; }
-        .coverage { text-align: right; font-weight: bold; }
-        .high { color: green; }
-        .medium { color: orange; }
-        .low { color: red; }
-    </style>
-</head>
-<body>
-    <h1>JaCoCo Coverage Report (Source Files Only)</h1>
-"""
-    
-    html_content += "<table><tr><th>Class</th><th>Line Coverage</th><th>Branch Coverage</th></tr>"
-    
-    # Filter source files (exclude test directory)
-    srcdir_path = Path(srcdir)
-    
-    for package in packages:
-        package_name = package.get('name')
-        
-        for sourcefile in package.findall('.//sourcefile'):
-            filename = sourcefile.get('name')
-            
-            # Skip if this is a test file
-            if 'Test' in filename:
-                continue
-            
-            # Only include classes that have a corresponding test file
-            if filename not in test_files:
-                continue
-            
-            # Get coverage counters
-            line_counter = sourcefile.find(".//counter[@type='LINE']")
-            branch_counter = sourcefile.find(".//counter[@type='BRANCH']")
-            
-            if line_counter is not None:
-                missed = int(line_counter.get('missed', 0))
-                covered = int(line_counter.get('covered', 0))
-                total = missed + covered
-                
-                total_missed += missed
-                total_covered += covered
-                
-                if total > 0:
-                    line_pct = (covered / total) * 100
-                    color_class = 'high' if line_pct >= 80 else ('medium' if line_pct >= 60 else 'low')
-                    
-                    branch_pct = 0
-                    if branch_counter is not None:
-                        b_missed = int(branch_counter.get('missed', 0))
-                        b_covered = int(branch_counter.get('covered', 0))
-                        b_total = b_missed + b_covered
-                        if b_total > 0:
-                            branch_pct = (b_covered / b_total) * 100
-                    
-                    html_content += f"""
-                    <tr>
-                        <td>{package_name.replace('/', '.')}/{filename}</td>
-                        <td class='coverage {color_class}'>{line_pct:.1f}% ({covered}/{total})</td>
-                        <td class='coverage'>{branch_pct:.1f}%</td>
-                    </tr>
-                    """
-    
-    # Add total
-    grand_total = total_missed + total_covered
-    if grand_total > 0:
-        total_pct = (total_covered / grand_total) * 100
-        color_class = 'high' if total_pct >= 80 else ('medium' if total_pct >= 60 else 'low')
-        
-        html_content += f"""
-        <tr style='font-weight: bold; background-color: #e0e0e0;'>
-            <td>TOTAL</td>
-            <td class='coverage {color_class}'>{total_pct:.1f}% ({total_covered}/{grand_total})</td>
-            <td class='coverage'>-</td>
-        </tr>
-        """
-    
-    html_content += "</table></body></html>"
-    
-    # Write output
-    with open(output_html, 'w') as f:
-        f.write(html_content)
-    
-    print(f"✓ Filtered coverage report generated: {output_html}")
-    print(f"✓ Total coverage: {total_pct:.1f}% ({total_covered}/{grand_total} lines)")
+    ns = {}
+    classes = []
+    for pkg in root.findall('package'):
+        for cls in pkg.findall('class'):
+            name = cls.get('name')
+            src = cls.get('sourcefilename')
+            # find line counter
+            missed = covered = None
+            for c in cls.findall('counter'):
+                if c.get('type') == 'LINE':
+                    missed = int(c.get('missed'))
+                    covered = int(c.get('covered'))
+                    break
+            classes.append({'name': name, 'source': src, 'missed': missed, 'covered': covered})
+    return classes
+
+
+def render_html(classes, out_path):
+    total_covered = sum(c['covered'] for c in classes)
+    total_lines = sum((c['covered'] + c['missed']) for c in classes)
+    pct = (100.0 * total_covered / total_lines) if total_lines else 0.0
+
+    rows = []
+    for c in classes:
+        lines = c['covered'] + (c['missed'] or 0)
+        percent = (100.0 * c['covered'] / lines) if lines else 0.0
+        rows.append((c['name'], c['source'], c['covered'], c['missed'], percent))
+
+    rows.sort(key=lambda r: (-r[4], r[0]))
+
+    html = ["<html><head><meta charset=\"utf-8\"><title>Filtered JaCoCo report</title>",
+            "<style>body{font-family:Arial,Helvetica,sans-serif;margin:20px}table{border-collapse:collapse;width:900px}th,td{border:1px solid #ccc;padding:8px;text-align:left}th{background:#f0f0f0}</style>",
+            "</head><body>"]
+    html.append(f"<h2>Filtered coverage report ({len(rows)} classes) — combined {pct:.1f}%</h2>")
+    html.append("<table>")
+    html.append("<tr><th>Class (internal)</th><th>Source file</th><th>Covered</th><th>Missed</th><th>Line %</th></tr>")
+    for name, src, covered, missed, percent in rows:
+        html.append(f"<tr><td>{name}</td><td>{src}</td><td>{covered}</td><td>{missed}</td><td>{percent:.1f}%</td></tr>")
+    html.append("</table>")
+    html.append("<p>Note: this is a compact filtered view showing only classes that have a matching *Test.java in the source tree.</p>")
+    html.append("</body></html>")
+
+    os.makedirs(os.path.dirname(out_path), exist_ok=True)
+    with open(out_path, 'w', encoding='utf-8') as f:
+        f.write('\n'.join(html))
+    print(f"Wrote filtered report to {out_path}")
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Filter JaCoCo coverage report')
-    parser.add_argument('--jacoco', required=True, help='Path to jacoco.xml')
-    parser.add_argument('--srcdir', required=True, help='Source directory to filter')
-    parser.add_argument('--out', required=True, help='Output HTML file')
-    
-    args = parser.parse_args()
-    
+    p = argparse.ArgumentParser()
+    p.add_argument('--jacoco', default='target/site/jacoco/jacoco.xml')
+    p.add_argument('--srcdir', default='project')
+    p.add_argument('--out', default='target/site/jacoco/filtered_index.html')
+    args = p.parse_args()
+
     if not os.path.exists(args.jacoco):
-        print(f"Error: JaCoCo XML file not found: {args.jacoco}")
-        return 1
-    
-    filter_jacoco(args.jacoco, args.srcdir, args.out)
+        print('Jacoco XML not found:', args.jacoco)
+        return 2
+
+    tst_targets = find_test_targets(args.srcdir)
+    if not tst_targets:
+        print('No *Test.java files found under', args.srcdir)
+        return 2
+
+    classes = parse_jacoco(args.jacoco)
+    filtered = [c for c in classes if c['source'] in tst_targets]
+
+    if not filtered:
+        print('No matching classes found in jacoco report for test targets')
+        return 2
+
+    render_html(filtered, args.out)
     return 0
 
 
 if __name__ == '__main__':
-    exit(main())
+    raise SystemExit(main())
