@@ -9,15 +9,15 @@ public class mainTest {
 		PermissionHandler permH = new PermissionHandler();
 		ReceiptHandler recH = new ReceiptHandler(permH);
 		
-		User a = new User("anna", Role.MANAGER, "abc");
-		User b = new User("bob", Role.ACCOUNTANT, "abc");
-		User b1 = new User("other bob", Role.ACCOUNTANT, "abc");
-		User c = new User("charlie", Role.SALESPERSON, "abc");
+		User a = new User("anna", Role.MANAGER, "abc", "email");
+		User b = new User("bob", Role.ACCOUNTANT, "abc", "email");
+		User b1 = new User("other bob", Role.ACCOUNTANT, "abc", "email");
+		User c = new User("charlie", Role.SALESPERSON, "abc", "email");
 		
-		recH.createReceipt(c, 3904.3, LocalDate.now(), "first receipt", "photo 1");
-		recH.createReceipt(b, 384.3, LocalDate.now(), "second receipt", "photo 2");
-		recH.createReceipt(c, 48964.3, LocalDate.now(), "third receipt", "photo 3");
-		recH.createReceipt(a, 295.6, LocalDate.now(), "fourth receipt", "photo 4");
+		recH.createReceipt(c, 3904.3, LocalDate.now(), "first receipt", "photo 1", "bank statement 1");
+		recH.createReceipt(b, 384.3, LocalDate.now(), "second receipt", "photo 2", "bank statement 2");
+		recH.createReceipt(c, 48964.3, LocalDate.now(), "third receipt", "photo 3", "bank statement 3");
+		recH.createReceipt(a, 295.6, LocalDate.now(), "fourth receipt", "photo 4", "bank statement 4");
 		
 		List<Receipt> receipts = recH.listReceipts();
 		

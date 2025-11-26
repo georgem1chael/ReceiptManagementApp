@@ -18,14 +18,14 @@ public class ReceiptHandlerTest {
     void setUp() {
         permissionHandler = new PermissionHandler();
         handler = new ReceiptHandler(permissionHandler);
-        manager = new User("anna", Role.MANAGER, "abc");
-        accountant = new User("charlie", Role.ACCOUNTANT, "abc");
-        salesperson = new User("bob", Role.SALESPERSON, "abc");
+        manager = new User("anna", Role.MANAGER, "abc", "email");
+        accountant = new User("charlie", Role.ACCOUNTANT, "abc", "email");
+        salesperson = new User("bob", Role.SALESPERSON, "abc", "email");
     }
 
     @Test
     void testCreateReceiptAddsToList() {
-        handler.createReceipt(salesperson, 50.0, LocalDate.now(), "third receipt", "photo 3");
+        handler.createReceipt(salesperson, 50.0, LocalDate.now(), "third receipt", "photo 3", "bank statement");
         assertEquals(1, handler.listReceipts().size());
         assertEquals("third receipt", handler.listReceipts().get(0).getDescription());
         assertEquals(salesperson, handler.listReceipts().get(0).getSubmitter());
@@ -33,7 +33,7 @@ public class ReceiptHandlerTest {
 
     @Test
     void testHandleReceiptByAccountant() {
-        handler.createReceipt(salesperson, 50.0, LocalDate.now(), "third receipt", "photo 3");
+        handler.createReceipt(salesperson, 50.0, LocalDate.now(), "third receipt", "photo 3", "bank statement");
         Receipt rec = handler.listReceipts().get(0);
 
         handler.handleReceipt(accountant, rec.getReceiptId());
@@ -42,7 +42,7 @@ public class ReceiptHandlerTest {
 
     @Test
     void testReceiptCantBeHandledBySalesperson() {
-        handler.createReceipt(salesperson, 50.0, LocalDate.now(), "third receipt", "photo 3");
+        handler.createReceipt(salesperson, 50.0, LocalDate.now(), "third receipt", "photo 3", "bank statement");
         Receipt rec = handler.listReceipts().get(0);
 
         assertThrows(SecurityException.class, () -> handler.handleReceipt(salesperson, rec.getReceiptId()));
@@ -51,7 +51,7 @@ public class ReceiptHandlerTest {
 
     @Test
     void testReceiptCantBeHandledByManager(){
-        handler.createReceipt(salesperson, 50.0, LocalDate.now(), "third receipt", "photo 3");
+        handler.createReceipt(salesperson, 50.0, LocalDate.now(), "third receipt", "photo 3", "bank statement");
         Receipt rec = handler.listReceipts().get(0);
 
         assertThrows(SecurityException.class, () -> handler.handleReceipt(manager, rec.getReceiptId()));
@@ -60,7 +60,7 @@ public class ReceiptHandlerTest {
 
     @Test
     void testReceiptCantBeApprovedBySalesperson(){
-        handler.createReceipt(salesperson, 50.0, LocalDate.now(), "third receipt", "photo 3");
+        handler.createReceipt(salesperson, 50.0, LocalDate.now(), "third receipt", "photo 3", "bank statement");
         Receipt rec = handler.listReceipts().get(0);
 
         rec.handle(accountant);
@@ -71,7 +71,7 @@ public class ReceiptHandlerTest {
 
     @Test
     void testReceiptCantBeRejectedBySalesperson(){
-        handler.createReceipt(salesperson, 50.0, LocalDate.now(), "third receipt", "photo 3");
+        handler.createReceipt(salesperson, 50.0, LocalDate.now(), "third receipt", "photo 3", "bank statement");
         Receipt rec = handler.listReceipts().get(0);
 
         rec.handle(accountant);
@@ -82,10 +82,10 @@ public class ReceiptHandlerTest {
 
     @Test
     void testReceiptCantBeApprovedByAccountant(){
-        handler.createReceipt(salesperson, 50.0, LocalDate.now(), "third receipt", "photo 3");
+        handler.createReceipt(salesperson, 50.0, LocalDate.now(), "third receipt", "photo 3", "bank statement");
         Receipt rec = handler.listReceipts().get(0);
 
-        User acc = new User("acc", Role.ACCOUNTANT, "password");
+        User acc = new User("acc", Role.ACCOUNTANT, "password", "email");
 
         rec.handle(accountant);
 
@@ -95,10 +95,10 @@ public class ReceiptHandlerTest {
 
     @Test
     void testReceiptCantBeRejectedByAccountant(){
-        handler.createReceipt(salesperson, 50.0, LocalDate.now(), "third receipt", "photo 3");
+        handler.createReceipt(salesperson, 50.0, LocalDate.now(), "third receipt", "photo 3","bank statement");
         Receipt rec = handler.listReceipts().get(0);
 
-        User acc = new User("acc", Role.ACCOUNTANT, "password");
+        User acc = new User("acc", Role.ACCOUNTANT, "password", "email");
 
         rec.handle(accountant);
 
@@ -108,7 +108,7 @@ public class ReceiptHandlerTest {
 
     @Test
     void testSamePersonCantHandleTheirReceipt() {
-        handler.createReceipt(accountant, 50.0, LocalDate.now(), "third receipt", "photo 3");
+        handler.createReceipt(accountant, 50.0, LocalDate.now(), "third receipt", "photo 3", "bank statement");
         Receipt rec = handler.listReceipts().get(0);
 
         assertThrows(SecurityException.class, () -> handler.handleReceipt(accountant, rec.getReceiptId()));        
@@ -117,7 +117,7 @@ public class ReceiptHandlerTest {
 
     @Test
     void testManagerCantApproveOwnReceipt(){
-        handler.createReceipt(manager, 50.0, LocalDate.now(), "third receipt", "photo 3");
+        handler.createReceipt(manager, 50.0, LocalDate.now(), "third receipt", "photo 3", "bank statement");
         Receipt rec = handler.listReceipts().get(0);
 
         rec.handle(accountant);
@@ -128,7 +128,7 @@ public class ReceiptHandlerTest {
 
     @Test
     void testManagerCantRejectOwnReceipt(){
-        handler.createReceipt(manager, 50.0, LocalDate.now(), "third receipt", "photo 3");
+        handler.createReceipt(manager, 50.0, LocalDate.now(), "third receipt", "photo 3", "bank statement");
         Receipt rec = handler.listReceipts().get(0);
 
         rec.handle(accountant);
@@ -139,7 +139,7 @@ public class ReceiptHandlerTest {
 
     @Test
     void testApproveReceipt() {
-        handler.createReceipt(salesperson, 50.0, LocalDate.now(), "third receipt", "photo 3");
+        handler.createReceipt(salesperson, 50.0, LocalDate.now(), "third receipt", "photo 3", "bank statement");
         Receipt rec = handler.listReceipts().get(0);
 
         handler.handleReceipt(accountant, rec.getReceiptId());
@@ -150,7 +150,7 @@ public class ReceiptHandlerTest {
 
     @Test
     void testRejectReceiptThrowsIfUnauthorized() {
-        handler.createReceipt(salesperson, 50.0, LocalDate.now(), "third receipt", "photo 3");
+        handler.createReceipt(salesperson, 50.0, LocalDate.now(), "third receipt", "photo 3","bank statement");
         Receipt rec = handler.listReceipts().get(0);
 
         handler.handleReceipt(accountant, rec.getReceiptId());
@@ -159,7 +159,7 @@ public class ReceiptHandlerTest {
 
     @Test
     void testCannotBeAcceptedBeforeHandling() {
-        handler.createReceipt(salesperson, 50.0, LocalDate.now(), "third receipt", "photo 3");
+        handler.createReceipt(salesperson, 50.0, LocalDate.now(), "third receipt", "photo 3", "bank statement");
         Receipt rec = handler.listReceipts().get(0);
 
         assertThrows(SecurityException.class, () -> handler.approveReceipt(manager, rec.getReceiptId()));
@@ -178,7 +178,7 @@ public class ReceiptHandlerTest {
 
     @Test
     void testRejectReceipt() {
-        handler.createReceipt(salesperson, 50.0, LocalDate.now(), "third receipt", "photo 3");
+        handler.createReceipt(salesperson, 50.0, LocalDate.now(), "third receipt", "photo 3", "bank statement");
         Receipt rec = handler.listReceipts().get(0);
 
         handler.handleReceipt(accountant, rec.getReceiptId());
@@ -190,8 +190,8 @@ public class ReceiptHandlerTest {
 
     @Test
     void testReceiptIdUnique() {
-        handler.createReceipt(salesperson, 50.0, LocalDate.now(), "third receipt", "photo 3");
-        handler.createReceipt(salesperson, 70.3, LocalDate.now(), "fourth receipt", "photo 4");
+        handler.createReceipt(salesperson, 50.0, LocalDate.now(), "third receipt", "photo 3", "bank statement");
+        handler.createReceipt(salesperson, 70.3, LocalDate.now(), "fourth receipt", "photo 4", "bank statement");
         Receipt rec1 = handler.listReceipts().get(0);
         Receipt rec2 = handler.listReceipts().get(1);
 
@@ -200,8 +200,8 @@ public class ReceiptHandlerTest {
 
     @Test
     void testStatusUnique() {
-        handler.createReceipt(salesperson, 50.0, LocalDate.now(), "third receipt", "photo 3");
-        handler.createReceipt(salesperson, 70.3, LocalDate.now(), "fourth receipt", "photo 4");
+        handler.createReceipt(salesperson, 50.0, LocalDate.now(), "third receipt", "photo 3", "bank statement");
+        handler.createReceipt(salesperson, 70.3, LocalDate.now(), "fourth receipt", "photo 4", "bank statement");
         Receipt rec1 = handler.listReceipts().get(0);
         Receipt rec2 = handler.listReceipts().get(1);
 
@@ -213,9 +213,9 @@ public class ReceiptHandlerTest {
 
     @Test
     void testListReceiptForSalesperson(){
-        User salesperson2 = new User("alice", Role.SALESPERSON, "password");
-        handler.createReceipt(salesperson, 100.0, LocalDate.now(), "receipt1", "photo1");
-        handler.createReceipt(salesperson, 200.0, LocalDate.now(), "receipt2", "photo2");
+        User salesperson2 = new User("alice", Role.SALESPERSON, "password", "email");
+        handler.createReceipt(salesperson, 100.0, LocalDate.now(), "receipt1", "photo1", "bank statement 1");
+        handler.createReceipt(salesperson, 200.0, LocalDate.now(), "receipt2", "photo2", "bank statement 2");
         List<Receipt> salesperson1Receipts = handler.listReceipt(salesperson);
         assertEquals(2, salesperson1Receipts.size());
         List<Receipt> salesperson2Receipts = handler.listReceipt(salesperson2);
@@ -224,9 +224,9 @@ public class ReceiptHandlerTest {
 
     @Test
     void testListReceiptForAccountant(){
-        handler.createReceipt(salesperson, 100.0, LocalDate.now(), "pending receipt", "photo1");
-        handler.createReceipt(salesperson, 200.0, LocalDate.now(), "will be handled", "photo2");  
-        handler.createReceipt(salesperson, 300.0, LocalDate.now(), "will be approved", "photo3");
+        handler.createReceipt(salesperson, 100.0, LocalDate.now(), "pending receipt", "photo1", "bank statement 1");
+        handler.createReceipt(salesperson, 200.0, LocalDate.now(), "will be handled", "photo2", "bank statement 2");  
+        handler.createReceipt(salesperson, 300.0, LocalDate.now(), "will be approved", "photo3", "bank statement 3");
         Receipt rec1 = handler.listReceipts().get(0);  // PENDING
         Receipt rec2 = handler.listReceipts().get(1);  // HANDLED
         Receipt rec3 = handler.listReceipts().get(2);  // WAPPROVED
@@ -235,19 +235,16 @@ public class ReceiptHandlerTest {
         handler.handleReceipt(accountant, rec3.getReceiptId());  // HANDLED first
         handler.approveReceipt(manager, rec3.getReceiptId());    // APPROVED
         List<Receipt> accountantReceipts = handler.listReceipt(accountant);
-        // Accountant sees: rec1 (PENDING), rec2 (HANDLED by them), rec3 (APPROVED but handled by them)
-        assertEquals(3, accountantReceipts.size());
-        assertTrue(accountantReceipts.stream().anyMatch(r -> r.getDescription().equals("pending receipt")));
-        assertTrue(accountantReceipts.stream().anyMatch(r -> r.getDescription().equals("will be handled")));
-        assertTrue(accountantReceipts.stream().anyMatch(r -> r.getDescription().equals("will be approved")));
+        assertEquals(1, accountantReceipts.size());
+        assertEquals("pending receipt", accountantReceipts.get(0).getDescription());
     }
 
     @Test
     void testListReceiptForManager(){
         // Create receipts by salesperson
-        handler.createReceipt(salesperson, 100.0, LocalDate.now(), "pending receipt", "photo1");
-        handler.createReceipt(salesperson, 200.0, LocalDate.now(), "will be handled", "photo2");
-        handler.createReceipt(salesperson, 300.0, LocalDate.now(), "will be approved", "photo3");
+        handler.createReceipt(salesperson, 100.0, LocalDate.now(), "pending receipt", "photo1", "bank statement 1");
+        handler.createReceipt(salesperson, 200.0, LocalDate.now(), "will be handled", "photo2", "bank statement 2");
+        handler.createReceipt(salesperson, 300.0, LocalDate.now(), "will be approved", "photo3", "bank statement 3");
         
         Receipt rec1 = handler.listReceipts().get(0);  // PENDING (manager shouldn't see)
         Receipt rec2 = handler.listReceipts().get(1);  // HANDLED (manager SHOULD see)
@@ -258,18 +255,17 @@ public class ReceiptHandlerTest {
         handler.handleReceipt(accountant, rec3.getReceiptId());  // ANDLED first
         handler.approveReceipt(manager, rec3.getReceiptId());    // rAPPROVED
         
-        // Manager should see rec2 (HANDLED) and rec3 (APPROVED)
+        // Manager should only see rec2 (HANDLED + not submitted by manager)
         List<Receipt> managerReceipts = handler.listReceipt(manager);
-        assertEquals(2, managerReceipts.size());
-        assertTrue(managerReceipts.stream().anyMatch(r -> r.getDescription().equals("will be handled")));
-        assertTrue(managerReceipts.stream().anyMatch(r -> r.getDescription().equals("will be approved")));
+        assertEquals(1, managerReceipts.size());
+        assertEquals("will be handled", managerReceipts.get(0).getDescription());
     }
 
     @Test
     void testListReceiptForAdministrator(){
-        User admin = new User("admin", Role.ADMIN, "password");
-        handler.createReceipt(salesperson, 100.0, LocalDate.now(), "receipt1", "photo1");
-        handler.createReceipt(salesperson, 200.0, LocalDate.now(), "receipt2", "photo2");
+        User admin = new User("admin", Role.ADMIN, "password", "email");
+        handler.createReceipt(salesperson, 100.0, LocalDate.now(), "receipt1", "photo1", "bank statement 1");
+        handler.createReceipt(salesperson, 200.0, LocalDate.now(), "receipt2", "photo2", "bank statement 2");
         
         // Administrator should get SecurityException
         assertThrows(SecurityException.class, () -> handler.listReceipt(admin));
@@ -277,7 +273,7 @@ public class ReceiptHandlerTest {
 
     @Test
     void testApproveDoesNotOverwriteAccountant() {
-        handler.createReceipt(salesperson, 50.0, LocalDate.now(), "receipt", "photo");
+        handler.createReceipt(salesperson, 50.0, LocalDate.now(), "receipt", "photo", "bank statement");
         Receipt rec = handler.listReceipts().get(0);
 
         handler.handleReceipt(accountant, rec.getReceiptId());
@@ -288,7 +284,7 @@ public class ReceiptHandlerTest {
 
     @Test
     void testRejectDoesNotOverwriteAccountant() {
-        handler.createReceipt(salesperson, 50.0, LocalDate.now(), "receipt", "photo");
+        handler.createReceipt(salesperson, 50.0, LocalDate.now(), "receipt", "photo", "bank statement");
         Receipt rec = handler.listReceipts().get(0);
 
         handler.handleReceipt(accountant, rec.getReceiptId());
@@ -299,7 +295,7 @@ public class ReceiptHandlerTest {
 
     @Test
     void testRejectAllowsEmptyReason() {
-        handler.createReceipt(salesperson, 100, LocalDate.now(), "receipt", "photo");
+        handler.createReceipt(salesperson, 100, LocalDate.now(), "receipt", "photo", "bank statement");
         Receipt rec = handler.listReceipts().get(0);
         handler.handleReceipt(accountant, rec.getReceiptId());
 

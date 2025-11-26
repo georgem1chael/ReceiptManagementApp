@@ -15,10 +15,10 @@ public class PermissionHandlerTest {
 
     @BeforeEach
     void setUp() {
-        manager = new User("anna", Role.MANAGER, "abc");
-        accountant = new User("charlie", Role.ACCOUNTANT, "abc");
-        salesperson = new User("bob", Role.SALESPERSON, "abc");
-        receipt = new Receipt(salesperson, 120.0, LocalDate.now(), "first receipt", "photo 1");
+        manager = new User("anna", Role.MANAGER, "abc", "email");
+        accountant = new User("charlie", Role.ACCOUNTANT, "abc", "email");
+        salesperson = new User("bob", Role.SALESPERSON, "abc", "email");
+        receipt = new Receipt(salesperson, 120.0, LocalDate.now(), "first receipt", "photo 1", "bank statement");
     }
 
     @Test
@@ -38,7 +38,7 @@ public class PermissionHandlerTest {
 
     @Test
     void testSubmitterCannotApproveOwn() {
-        Receipt rec = new Receipt(manager, 100, LocalDate.now(), "second receipt", "photo 2");
+        Receipt rec = new Receipt(manager, 100, LocalDate.now(), "second receipt", "photo 2", "bank statement");
         assertFalse(handler.canApprove(manager, rec));
     }
 
