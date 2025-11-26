@@ -8,6 +8,7 @@ public class Receipt {
 	private LocalDate date;
 	private String description;
 	private String photoPath;
+	private String bankPath;
 	private Status status;
 	private User submitter;
 	
@@ -20,13 +21,14 @@ public class Receipt {
 	private LocalDate statusByManagerAt;
 	private String rejectedBc;
 	
-	public Receipt (User salesperson, double amount, LocalDate date, String description, String photoPath) {
+	public Receipt (User salesperson, double amount, LocalDate date, String description, String photoPath, String bankPath) {
 		
 		this.receiptId = counter++;
 		this.amount = amount;
 		this.date = date;
 		this.description = description;
 		this.photoPath = photoPath;
+		this.bankPath = bankPath;
 		this.status = Status.PENDING;
 		this.submitter = salesperson;
 	}
@@ -106,6 +108,11 @@ public class Receipt {
 	public String getPhotoPath() {
 		
 		return this.photoPath;
+	}
+
+	public String getBankPath() {
+
+		return this.bankPath;
 	}
 	
 	public User getSubmitter() {

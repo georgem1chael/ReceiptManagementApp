@@ -9,8 +9,8 @@ public class UserHandler {
 		this.users = new ArrayList<>();
 	}
 	
-	public void createUser(String username, Role role, String password) {
-		User newUser = new User(username, role, password);
+	public void createUser(String username, Role role, String password, String email) {
+		User newUser = new User(username, role, password, email);
 		users.add(newUser);		
 	}
 	
