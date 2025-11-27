@@ -13,7 +13,7 @@
     <property name="sun.java.launcher" value="SUN_STANDARD"/>
     <property name="user.country" value="CY"/>
     <property name="sun.boot.library.path" value="/opt/homebrew/Cellar/openjdk/25.0.1/libexec/openjdk.jdk/Contents/Home/lib"/>
-    <property name="sun.java.command" value="/Users/georgemichael/Desktop/Semesters/Fifth Semester/Software Engineering /project/project/dm571project/target/surefire/surefirebooter-20251125161057440_3.jar /Users/georgemichael/Desktop/Semesters/Fifth Semester/Software Engineering /project/project/dm571project/target/surefire 2025-11-25T16-10-57_293-jvmRun1 surefire-20251125161057440_1tmp surefire_0-20251125161057440_2tmp"/>
+    <property name="sun.java.command" value="/Users/georgemichael/Desktop/Semesters/Fifth Semester/Software Engineering /project/project/dm571project/target/surefire/surefirebooter-20251127150309399_3.jar /Users/georgemichael/Desktop/Semesters/Fifth Semester/Software Engineering /project/project/dm571project/target/surefire 2025-11-27T15-03-09_281-jvmRun1 surefire-20251127150309399_1tmp surefire_0-20251127150309399_2tmp"/>
     <property name="http.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
     <property name="jdk.debug" value="release"/>
     <property name="surefire.test.class.path" value="/Users/georgemichael/Desktop/Semesters/Fifth Semester/Software Engineering /project/project/dm571project/target/test-classes:/Users/georgemichael/Desktop/Semesters/Fifth Semester/Software Engineering /project/project/dm571project/target/classes:/Users/georgemichael/.m2/repository/org/junit/jupiter/junit-jupiter/5.9.3/junit-jupiter-5.9.3.jar:/Users/georgemichael/.m2/repository/org/junit/jupiter/junit-jupiter-api/5.9.3/junit-jupiter-api-5.9.3.jar:/Users/georgemichael/.m2/repository/org/opentest4j/opentest4j/1.2.0/opentest4j-1.2.0.jar:/Users/georgemichael/.m2/repository/org/junit/platform/junit-platform-commons/1.9.3/junit-platform-commons-1.9.3.jar:/Users/georgemichael/.m2/repository/org/apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.jar:/Users/georgemichael/.m2/repository/org/junit/jupiter/junit-jupiter-params/5.9.3/junit-jupiter-params-5.9.3.jar:/Users/georgemichael/.m2/repository/org/junit/jupiter/junit-jupiter-engine/5.9.3/junit-jupiter-engine-5.9.3.jar:/Users/georgemichael/.m2/repository/org/junit/platform/junit-platform-engine/1.9.3/junit-platform-engine-1.9.3.jar:"/>
@@ -30,7 +30,7 @@
     <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
     <property name="java.specification.name" value="Java Platform API Specification"/>
     <property name="apple.awt.application.name" value="ForkedBooter"/>
-    <property name="surefire.real.class.path" value="/Users/georgemichael/Desktop/Semesters/Fifth Semester/Software Engineering /project/project/dm571project/target/surefire/surefirebooter-20251125161057440_3.jar"/>
+    <property name="surefire.real.class.path" value="/Users/georgemichael/Desktop/Semesters/Fifth Semester/Software Engineering /project/project/dm571project/target/surefire/surefirebooter-20251127150309399_3.jar"/>
     <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
     <property name="ftp.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
     <property name="java.runtime.version" value="25.0.1"/>
@@ -62,6 +62,6 @@
   </properties>
   <testcase name="testSalespersonCannotApprove" classname="project.PermissionHandlerTest" time="0"/>
   <testcase name="testAccountantCannotApprove" classname="project.PermissionHandlerTest" time="0"/>
-  <testcase name="testManagerCanApprove" classname="project.PermissionHandlerTest" time="0"/>
+  <testcase name="testManagerCanApprove" classname="project.PermissionHandlerTest" time="0.001"/>
   <testcase name="testSubmitterCannotApproveOwn" classname="project.PermissionHandlerTest" time="0"/>
 </testsuite>

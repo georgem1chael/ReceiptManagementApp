@@ -13,10 +13,10 @@ public class ReceiptTest {
 
     @BeforeEach
     void setUp() {
-        manager = new User("anna", Role.MANAGER, "abc");
-        accountant = new User("charlie", Role.ACCOUNTANT, "abc");
-        salesperson = new User("bob", Role.SALESPERSON, "abc");
-        receipt = new Receipt(salesperson, 120.0, LocalDate.now(), "first receipt", "photo 1");
+        manager = new User("anna", Role.MANAGER, "abc", "anna@company.com");
+        accountant = new User("charlie", Role.ACCOUNTANT, "abc", "charlie@company.com");
+        salesperson = new User("bob", Role.SALESPERSON, "abc", "bob@company.com");
+        receipt = new Receipt(salesperson, 120.0, LocalDate.now(), "first receipt", "photo 1", "bank_statement_1");
     }
 
     @Test
@@ -53,6 +53,7 @@ public class ReceiptTest {
         assertEquals(120.0, receipt.getAmount());
         assertEquals("first receipt", receipt.getDescription());
         assertEquals("photo 1", receipt.getPhotoPath());
+        assertEquals("bank_statement_1", receipt.getBankPath());
         assertEquals(salesperson, receipt.getSubmitter());
 
         // before any transition some fields should be null
@@ -72,7 +73,7 @@ public class ReceiptTest {
         assertNotNull(receipt.statusChangedAt());
 
         // new receipt to test rejection reason
-        Receipt r2 = new Receipt(salesperson, 10.0, LocalDate.now(), "r2", "p2");
+        Receipt r2 = new Receipt(salesperson, 10.0, LocalDate.now(), "r2", "p2", "bank_statement_2");
         r2.handle(accountant);
         r2.reject(manager, "nope");
         assertEquals("nope", r2.getReason());
@@ -82,96 +83,7 @@ public class ReceiptTest {
     @Test
     void testGetDate() {
         LocalDate testDate = LocalDate.of(2023, 12, 15);
-        Receipt testReceipt = new Receipt(salesperson, 50.0, testDate, "test receipt", "photo");
-        assertEquals(testDpackage project;
-import static org.junit.jupiter.api.Assertions.*;
-import java.time.LocalDate;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
-public class ReceiptTest {
-
-    private User manager;
-    private User accountant;
-    private User salesperson;
-    private Receipt receipt;
-
-    @BeforeEach
-    void setUp() {
-        manager = new User("anna", Role.MANAGER, "abc", "email");
-        accountant = new User("charlie", Role.ACCOUNTANT, "abc", "email");
-        salesperson = new User("bob", Role.SALESPERSON, "abc", "email");
-        receipt = new Receipt(salesperson, 120.0, LocalDate.now(), "first receipt", "photo 1", "bank statement");
-    }
-
-    @Test
-    void testCreatingReceiptSetsStatusToPending() {
-        assertEquals(receipt.getStatus(), Status.PENDING);
-    }
-
-    @Test
-    void testApproveChangesStatus() {
-        receipt.approve(manager);
-        assertEquals(Status.APPROVED, receipt.getStatus());
-    }
-
-    @Test
-    void testRejectChangesStatus() {
-        receipt.reject(manager, "rejected...");
-        assertEquals(Status.REJECTED, receipt.getStatus());
-    }
-
-    @Test
-    void testNewReceiptsStartPending() {
-        assertEquals(Status.PENDING, receipt.getStatus());
-    }
-
-    @Test
-    void restHandle()  {
-        receipt.handle(accountant);
-        assertEquals(receipt.getAccountant(), accountant);
-    }
-
-    @Test
-    void testGettersAndTransitionDatesAndReason() {
-        // basic getters
-        assertEquals(120.0, receipt.getAmount());
-        assertEquals("first receipt", receipt.getDescription());
-        assertEquals("photo 1", receipt.getPhotoPath());
-        assertEquals(salesperson, receipt.getSubmitter());
-        assertEquals("bank statement", receipt.getBankPath());
-
-        // before any transition some fields should be null
-        assertNull(receipt.getReason());
-        assertNull(receipt.getAccountantDate());
-        assertNull(receipt.getStatusByManagerAt());
-
-        // after handling by accountant
-        receipt.handle(accountant);
-        assertNotNull(receipt.getAccountant());
-        assertNotNull(receipt.getAccountantDate());
-
-        // after manager decision (approve)
-        receipt.approve(manager);
-        assertEquals(Status.APPROVED, receipt.getStatus());
-        assertEquals(manager, receipt.getStatusChangedBy());
-        assertNotNull(receipt.statusChangedAt());
-
-        // new receipt to test rejection reason
-        Receipt r2 = new Receipt(salesperson, 10.0, LocalDate.now(), "r2", "p2", "bank statement");
-        r2.handle(accountant);
-        r2.reject(manager, "nope");
-        assertEquals("nope", r2.getReason());
-        assertEquals(Status.REJECTED, r2.getStatus());
-    }
-
-    @Test
-    void testGetDate() {
-        LocalDate testDate = LocalDate.of(2023, 12, 15);
-        Receipt testReceipt = new Receipt(salesperson, 50.0, testDate, "test receipt", "photo", "bank statement");
+        Receipt testReceipt = new Receipt(salesperson, 50.0, testDate, "test receipt", "photo", "bank_statement_3");
         assertEquals(testDate, testReceipt.getDate());
-    }
-}
-ate, testReceipt.getDate());
     }
 }

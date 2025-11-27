@@ -50,6 +50,20 @@
                 </configuration>
             </plugin>
 
+            <!-- PMD plugin for cyclomatic complexity analysis -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-pmd-plugin</artifactId>
+                <version>3.21.0</version>
+                <configuration>
+                    <rulesets>
+                        <ruleset>/rulesets/java/codesize.xml</ruleset>
+                    </rulesets>
+                    <targetJdk>17</targetJdk>
+                    <includeTests>false</includeTests>
+                </configuration>
+            </plugin>
+
             <!-- JaCoCo plugin for test coverage reporting -->
             <plugin>
                 <groupId>org.jacoco</groupId>

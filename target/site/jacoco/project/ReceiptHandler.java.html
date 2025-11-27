@@ -15,9 +15,9 @@ public class ReceiptHandler{
 <span class="fc" id="L15">	}</span>
 	
 	
-	public void createReceipt(User user, double amount, LocalDate date, String description, String photoPath) {
+	public void createReceipt(User user, double amount, LocalDate date, String description, String photoPath, String bankPath) {
 		
-<span class="fc" id="L20">		Receipt newReceipt = new Receipt(user, amount, date, description, photoPath);</span>
+<span class="fc" id="L20">		Receipt newReceipt = new Receipt(user, amount, date, description, photoPath, bankPath);</span>
 		
 <span class="fc" id="L22">		receipts.add(newReceipt);</span>
 <span class="fc" id="L23">	}</span>

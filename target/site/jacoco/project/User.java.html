@@ -4,33 +4,40 @@ public class User {
 	private String username;
 	private Role role;
 	private String password;
+	private String email;
 	
-<span class="fc" id="L8">	public User(String username, Role role, String password) {</span>
+<span class="fc" id="L9">	public User(String username, Role role, String password, String email) {</span>
 		
-<span class="fc" id="L10">		this.username = username;</span>
-<span class="fc" id="L11">		this.role = role;</span>
-<span class="fc" id="L12">		this.password = password;</span>
-<span class="fc" id="L13">	}</span>
+<span class="fc" id="L11">		this.username = username;</span>
+<span class="fc" id="L12">		this.role = role;</span>
+<span class="fc" id="L13">		this.password = password;</span>
+<span class="fc" id="L14">		this.email = email;</span>
+<span class="fc" id="L15">	}</span>
 	
 	public String getUsername() {
 		
-<span class="fc" id="L17">		return username;</span>
+<span class="fc" id="L19">		return username;</span>
 	}
 	
 	public Role getRole() {
 		
-<span class="fc" id="L22">		return role;</span>
+<span class="fc" id="L24">		return role;</span>
 	}
 
 	public String getPassword(){
 
-<span class="nc" id="L27">		return password;</span>
+<span class="nc" id="L29">		return password;</span>
 	}
 
 	public void setPassword(String password) {
 
-<span class="nc" id="L32">		this.password = password;</span>
-<span class="nc" id="L33">	}</span>
+<span class="nc" id="L34">		this.password = password;</span>
+<span class="nc" id="L35">	}</span>
+
+	public String getEmail(){
+
+<span class="nc" id="L39">		return this.email;</span>
+	}
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

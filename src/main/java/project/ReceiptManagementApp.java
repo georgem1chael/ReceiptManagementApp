@@ -37,11 +37,11 @@ public class ReceiptManagementApp extends JFrame {
     }
     
     private void initializeUsers() {
-        userHandler.createUser("admin", Role.ADMIN, "admin123");
-        userHandler.createUser("alice", Role.MANAGER, "manager123");
-        userHandler.createUser("bob", Role.ACCOUNTANT, "account123");
-        userHandler.createUser("charlie", Role.SALESPERSON, "sales123");
-        userHandler.createUser("diana", Role.SALESPERSON, "sales456");
+        userHandler.createUser("admin", Role.ADMIN, "admin123", "admin@company.com");
+        userHandler.createUser("alice", Role.MANAGER, "manager123", "alice@company.com");
+        userHandler.createUser("bob", Role.ACCOUNTANT, "account123", "bob@company.com");
+        userHandler.createUser("charlie", Role.SALESPERSON, "sales123", "charlie@company.com");
+        userHandler.createUser("diana", Role.SALESPERSON, "sales123", "diana@company.com");
     }
     
     // ================== LOGIN SYSTEM ==================
@@ -100,7 +100,7 @@ public class ReceiptManagementApp extends JFrame {
         
         // Demo users info
         gbc.gridy = 3;
-        JLabel infoLabel = new JLabel("<html><center><small>Demo Users:<br/>admin/admin123, alice/manager123, bob/account123, charlie/sales123</small></center></html>");
+        JLabel infoLabel = new JLabel("<html><center><small>Demo Users:<br/>admin/admin123, alice/manager123, bob/account123, charlie/diana/sales123</small></center></html>");
         panel.add(infoLabel, gbc);
         
         // Login action
@@ -149,7 +149,7 @@ public class ReceiptManagementApp extends JFrame {
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
         splitPane.setLeftComponent(createReceiptSubmissionForm());
         splitPane.setRightComponent(createPersonalReceiptsPanel());
-        splitPane.setDividerLocation(450); // Increased from 350 to give more space for form
+        splitPane.setDividerLocation(450);
         
         mainPanel.add(splitPane, BorderLayout.CENTER);
         
@@ -171,6 +171,8 @@ public class ReceiptManagementApp extends JFrame {
         JTextField dateField = new JTextField(LocalDate.now().toString());
         JTextField imageField = new JTextField("No file selected");
         imageField.setEditable(false);
+        JTextField bankStatementField = new JTextField("No file selected");
+        bankStatementField.setEditable(false);
         
         // Amount
         gbc.gridx = 0; gbc.gridy = 0;
@@ -190,30 +192,49 @@ public class ReceiptManagementApp extends JFrame {
         gbc.gridx = 1;
         panel.add(dateField, gbc);
         
-        // Image
+        // Receipt Image
         gbc.gridx = 0; gbc.gridy = 3;
         panel.add(new JLabel("Receipt Image:"), gbc);
         gbc.gridx = 1;
         panel.add(imageField, gbc);
         
-        // Browse button
+        // Browse button for receipt image
         gbc.gridx = 2;
-        JButton browseBtn = new JButton("Browse");
-        panel.add(browseBtn, gbc);
+        JButton browseReceiptBtn = new JButton("Browse");
+        panel.add(browseReceiptBtn, gbc);
+        
+        // Bank Statement
+        gbc.gridx = 0; gbc.gridy = 4;
+        panel.add(new JLabel("Bank Statement:"), gbc);
+        gbc.gridx = 1;
+        panel.add(bankStatementField, gbc);
+        
+        // Browse button for bank statement
+        gbc.gridx = 2;
+        JButton browseBankBtn = new JButton("Browse");
+        panel.add(browseBankBtn, gbc);
         
         // Submit button
-        gbc.gridx = 0; gbc.gridy = 4; gbc.gridwidth = 3;
+        gbc.gridx = 0; gbc.gridy = 5; gbc.gridwidth = 3;
         gbc.anchor = GridBagConstraints.CENTER;
         JButton submitBtn = new JButton("Submit Receipt");
         submitBtn.setPreferredSize(new Dimension(200, 35));
         panel.add(submitBtn, gbc);
         
-        // File chooser
-        JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setFileFilter(new FileNameExtensionFilter("Image Files", "jpg", "jpeg", "png", "gif", "bmp"));
-        browseBtn.addActionListener(e -> {
-            if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-                imageField.setText(fileChooser.getSelectedFile().getAbsolutePath());
+        // File choosers
+        JFileChooser imageChooser = new JFileChooser();
+        imageChooser.setFileFilter(new FileNameExtensionFilter("Image Files", "jpg", "jpeg", "png", "gif", "bmp"));
+        browseReceiptBtn.addActionListener(e -> {
+            if (imageChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+                imageField.setText(imageChooser.getSelectedFile().getAbsolutePath());
+            }
+        });
+        
+        JFileChooser bankChooser = new JFileChooser();
+        bankChooser.setFileFilter(new FileNameExtensionFilter("Image Files", "jpg", "jpeg", "png", "gif", "bmp", "pdf"));
+        browseBankBtn.addActionListener(e -> {
+            if (bankChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+                bankStatementField.setText(bankChooser.getSelectedFile().getAbsolutePath());
             }
         });
         
@@ -230,19 +251,28 @@ public class ReceiptManagementApp extends JFrame {
                     return;
                 }
                 
+                if (bankStatementField.getText().equals("No file selected")) {
+                    showError("Please select a bank statement document!");
+                    return;
+                }
+                
                 double amount = Double.parseDouble(amountField.getText());
                 String description = descField.getText().trim();
                 LocalDate date = LocalDate.parse(dateField.getText());
                 String imagePath = imageField.getText();
+                String bankPath = bankStatementField.getText();
                 
-                receiptHandler.createReceipt(currentUser, amount, date, description, imagePath);
-                showSuccess("Receipt submitted successfully!");
+                receiptHandler.createReceipt(currentUser, amount, date, description, imagePath, bankPath);
+                
+                // Show message reminding to keep original receipt
+                showSuccess("Receipt submitted successfully!\n\nPlease remember to keep the original receipt for audit purposes.");
                 
                 // Clear form
                 amountField.setText("");
                 descField.setText("");
                 dateField.setText(LocalDate.now().toString());
                 imageField.setText("No file selected");
+                bankStatementField.setText("No file selected");
                 
                 // Refresh dashboard
                 showSalespersonDashboard();
@@ -541,6 +571,7 @@ public class ReceiptManagementApp extends JFrame {
         JTabbedPane tabbedPane = new JTabbedPane();
         tabbedPane.addTab("User Management", createUserManagementPanel());
         tabbedPane.addTab("System Overview", createSystemOverviewPanel());
+        tabbedPane.addTab("System Inbox", createSystemInboxPanel());
         
         mainPanel.add(tabbedPane, BorderLayout.CENTER);
         
@@ -552,13 +583,14 @@ public class ReceiptManagementApp extends JFrame {
         JPanel panel = new JPanel(new BorderLayout());
         
         // User list
-        String[] columns = {"Username", "Role", "Password"};
+        String[] columns = {"Username", "Role", "Email", "Password"};
         DefaultTableModel model = new DefaultTableModel(columns, 0);
         
         for (User user : userHandler.listUsers(currentUser)) {
             model.addRow(new Object[]{
                 user.getUsername(),
                 user.getRole().toString(),
+                user.getEmail(),
                 user.getPassword()
             });
         }
@@ -659,6 +691,106 @@ public class ReceiptManagementApp extends JFrame {
         
         gbc.gridy = 5;
         panel.add(new JLabel("Total Users: " + userHandler.getAllUsernames().size()), gbc);
+        
+        return panel;
+    }
+    
+    private JPanel createSystemInboxPanel() {
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBorder(BorderFactory.createTitledBorder("System Inbox"));
+        
+        // Split pane: left side shows receipts list, right side shows submitter details
+        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+        
+        // Left panel: Receipts table
+        JPanel receiptsPanel = new JPanel(new BorderLayout());
+        
+        String[] columns = {"ID", "Amount", "Submitter", "Description", "Date", "Status"};
+        DefaultTableModel model = new DefaultTableModel(columns, 0);
+        
+        List<Receipt> allReceipts = receiptHandler.listReceipts();
+        for (Receipt receipt : allReceipts) {
+            model.addRow(new Object[]{
+                receipt.getReceiptId(),
+                String.format("DKK %.2f", receipt.getAmount()),
+                receipt.getSubmitter().getUsername(),
+                receipt.getDescription(),
+                receipt.getDate().toString(),
+                receipt.getStatus().toString()
+            });
+        }
+        
+        JTable receiptsTable = new JTable(model);
+        receiptsTable.setRowHeight(25);
+        receiptsPanel.add(new JScrollPane(receiptsTable), BorderLayout.CENTER);
+        
+        // Right panel: Submitter details and receipt info
+        JPanel detailsPanel = new JPanel(new BorderLayout());
+        detailsPanel.setBorder(BorderFactory.createTitledBorder("Submitter Details"));
+        
+        JTextArea detailsArea = new JTextArea();
+        detailsArea.setEditable(false);
+        detailsArea.setWrapStyleWord(true);
+        detailsArea.setLineWrap(true);
+        detailsArea.setFont(new Font("Monospaced", Font.PLAIN, 12));
+        
+        JButton viewFullDetailsBtn = new JButton("View Full Details");
+        
+        receiptsTable.getSelectionModel().addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting() && receiptsTable.getSelectedRow() >= 0) {
+                int receiptId = (int) model.getValueAt(receiptsTable.getSelectedRow(), 0);
+                Receipt receipt = receiptHandler.findReceiptById(receiptId);
+                
+                if (receipt != null) {
+                    User submitter = receipt.getSubmitter();
+                    StringBuilder details = new StringBuilder();
+                    details.append("=== SUBMITTER INFORMATION ===\n\n");
+                    details.append("Username: ").append(submitter.getUsername()).append("\n");
+                    details.append("Role: ").append(submitter.getRole()).append("\n");
+                    details.append("Email: ").append(submitter.getEmail()).append("\n");
+                    details.append("\n=== RECEIPT INFORMATION ===\n\n");
+                    details.append("Receipt ID: ").append(receipt.getReceiptId()).append("\n");
+                    details.append("Amount: DKK ").append(String.format("%.2f", receipt.getAmount())).append("\n");
+                    details.append("Date: ").append(receipt.getDate()).append("\n");
+                    details.append("Status: ").append(receipt.getStatus()).append("\n");
+                    details.append("Description: ").append(receipt.getDescription()).append("\n");
+                    
+                    if (receipt.getAccountant() != null) {
+                        details.append("Handled by: ").append(receipt.getAccountant().getUsername()).append("\n");
+                    }
+                    if (receipt.getStatusChangedBy() != null) {
+                        details.append("Decision by: ").append(receipt.getStatusChangedBy().getUsername()).append("\n");
+                    }
+                    if (receipt.getReason() != null && !receipt.getReason().isEmpty()) {
+                        details.append("Rejection Reason: ").append(receipt.getReason()).append("\n");
+                    }
+                    
+                    detailsArea.setText(details.toString());
+                }
+            }
+        });
+        
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        viewFullDetailsBtn.addActionListener(e -> {
+            int row = receiptsTable.getSelectedRow();
+            if (row >= 0) {
+                int receiptId = (int) model.getValueAt(row, 0);
+                Receipt receipt = receiptHandler.findReceiptById(receiptId);
+                if (receipt != null) {
+                    showReceiptDetailsDialog(receipt);
+                }
+            }
+        });
+        buttonPanel.add(viewFullDetailsBtn);
+        
+        detailsPanel.add(new JScrollPane(detailsArea), BorderLayout.CENTER);
+        detailsPanel.add(buttonPanel, BorderLayout.SOUTH);
+        
+        splitPane.setLeftComponent(receiptsPanel);
+        splitPane.setRightComponent(detailsPanel);
+        splitPane.setDividerLocation(500);
+        
+        panel.add(splitPane, BorderLayout.CENTER);
         
         return panel;
     }
@@ -798,6 +930,46 @@ public class ReceiptManagementApp extends JFrame {
             }
             
             detailsPanel.add(imagePanel, gbc);
+        }
+        
+        // Bank statement image
+        if (receipt.getBankPath() != null && !receipt.getBankPath().isEmpty()) {
+            gbc.gridx = 0; gbc.gridy = 11;
+            detailsPanel.add(new JLabel("Bank Statement:"), gbc);
+            gbc.gridx = 1; gbc.gridy = 12; gbc.gridwidth = 2;
+            
+            JPanel bankPanel = new JPanel(new BorderLayout());
+            
+            // Try to load and display the bank statement image
+            try {
+                java.io.File bankFile = new java.io.File(receipt.getBankPath());
+                if (bankFile.exists()) {
+                    javax.swing.ImageIcon bankIcon = new javax.swing.ImageIcon(receipt.getBankPath());
+                    // Scale the image to fit nicely in the dialog
+                    java.awt.Image image = bankIcon.getImage().getScaledInstance(200, 150, java.awt.Image.SCALE_SMOOTH);
+                    javax.swing.ImageIcon scaledIcon = new javax.swing.ImageIcon(image);
+                    
+                    JLabel bankLabel = new JLabel(scaledIcon);
+                    bankLabel.setBorder(BorderFactory.createEtchedBorder());
+                    bankPanel.add(bankLabel, BorderLayout.CENTER);
+                } else {
+                    // If file doesn't exist, show path only
+                    JLabel bankLabel = new JLabel("Bank file not found: " + receipt.getBankPath());
+                    bankLabel.setBorder(BorderFactory.createEtchedBorder());
+                    bankLabel.setPreferredSize(new Dimension(200, 100));
+                    bankLabel.setHorizontalAlignment(SwingConstants.CENTER);
+                    bankPanel.add(bankLabel, BorderLayout.CENTER);
+                }
+            } catch (Exception e) {
+                // Fallback to showing just the path if loading fails
+                JLabel bankLabel = new JLabel("Cannot display bank statement: " + receipt.getBankPath());
+                bankLabel.setBorder(BorderFactory.createEtchedBorder());
+                bankLabel.setPreferredSize(new Dimension(200, 100));
+                bankLabel.setHorizontalAlignment(SwingConstants.CENTER);
+                bankPanel.add(bankLabel, BorderLayout.CENTER);
+            }
+            
+            detailsPanel.add(bankPanel, gbc);
         }
         
         dialog.add(new JScrollPane(detailsPanel), BorderLayout.CENTER);

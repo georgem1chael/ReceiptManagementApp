@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="project.ReceiptHandlerTest" time="0.062" tests="25" errors="0" skipped="0" failures="0">
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="project.ReceiptHandlerTest" time="0.064" tests="25" errors="0" skipped="0" failures="0">
   <properties>
     <property name="java.specification.version" value="25"/>
     <property name="sun.jnu.encoding" value="UTF-8"/>
@@ -13,7 +13,7 @@
     <property name="sun.java.launcher" value="SUN_STANDARD"/>
     <property name="user.country" value="CY"/>
     <property name="sun.boot.library.path" value="/opt/homebrew/Cellar/openjdk/25.0.1/libexec/openjdk.jdk/Contents/Home/lib"/>
-    <property name="sun.java.command" value="/Users/georgemichael/Desktop/Semesters/Fifth Semester/Software Engineering /project/project/dm571project/target/surefire/surefirebooter-20251125161057440_3.jar /Users/georgemichael/Desktop/Semesters/Fifth Semester/Software Engineering /project/project/dm571project/target/surefire 2025-11-25T16-10-57_293-jvmRun1 surefire-20251125161057440_1tmp surefire_0-20251125161057440_2tmp"/>
+    <property name="sun.java.command" value="/Users/georgemichael/Desktop/Semesters/Fifth Semester/Software Engineering /project/project/dm571project/target/surefire/surefirebooter-20251127150309399_3.jar /Users/georgemichael/Desktop/Semesters/Fifth Semester/Software Engineering /project/project/dm571project/target/surefire 2025-11-27T15-03-09_281-jvmRun1 surefire-20251127150309399_1tmp surefire_0-20251127150309399_2tmp"/>
     <property name="http.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
     <property name="jdk.debug" value="release"/>
     <property name="surefire.test.class.path" value="/Users/georgemichael/Desktop/Semesters/Fifth Semester/Software Engineering /project/project/dm571project/target/test-classes:/Users/georgemichael/Desktop/Semesters/Fifth Semester/Software Engineering /project/project/dm571project/target/classes:/Users/georgemichael/.m2/repository/org/junit/jupiter/junit-jupiter/5.9.3/junit-jupiter-5.9.3.jar:/Users/georgemichael/.m2/repository/org/junit/jupiter/junit-jupiter-api/5.9.3/junit-jupiter-api-5.9.3.jar:/Users/georgemichael/.m2/repository/org/opentest4j/opentest4j/1.2.0/opentest4j-1.2.0.jar:/Users/georgemichael/.m2/repository/org/junit/platform/junit-platform-commons/1.9.3/junit-platform-commons-1.9.3.jar:/Users/georgemichael/.m2/repository/org/apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.jar:/Users/georgemichael/.m2/repository/org/junit/jupiter/junit-jupiter-params/5.9.3/junit-jupiter-params-5.9.3.jar:/Users/georgemichael/.m2/repository/org/junit/jupiter/junit-jupiter-engine/5.9.3/junit-jupiter-engine-5.9.3.jar:/Users/georgemichael/.m2/repository/org/junit/platform/junit-platform-engine/1.9.3/junit-platform-engine-1.9.3.jar:"/>
@@ -30,7 +30,7 @@
     <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
     <property name="java.specification.name" value="Java Platform API Specification"/>
     <property name="apple.awt.application.name" value="ForkedBooter"/>
-    <property name="surefire.real.class.path" value="/Users/georgemichael/Desktop/Semesters/Fifth Semester/Software Engineering /project/project/dm571project/target/surefire/surefirebooter-20251125161057440_3.jar"/>
+    <property name="surefire.real.class.path" value="/Users/georgemichael/Desktop/Semesters/Fifth Semester/Software Engineering /project/project/dm571project/target/surefire/surefirebooter-20251127150309399_3.jar"/>
     <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
     <property name="ftp.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
     <property name="java.runtime.version" value="25.0.1"/>
@@ -62,8 +62,8 @@
   </properties>
   <testcase name="testCannotBeAcceptedBeforeHandling" classname="project.ReceiptHandlerTest" time="0.025"/>
   <testcase name="testSamePersonCantHandleTheirReceipt" classname="project.ReceiptHandlerTest" time="0.002"/>
-  <testcase name="testListReceiptForSalesperson" classname="project.ReceiptHandlerTest" time="0.001"/>
-  <testcase name="testStatusUnique" classname="project.ReceiptHandlerTest" time="0.002">
+  <testcase name="testListReceiptForSalesperson" classname="project.ReceiptHandlerTest" time="0"/>
+  <testcase name="testStatusUnique" classname="project.ReceiptHandlerTest" time="0.001">
     <system-out><![CDATA[Receipt 5 handled!
 Receipt 5 approved!
 ]]></system-out>
@@ -84,25 +84,25 @@ Reason:
     <system-out><![CDATA[Receipt 9 handled!
 ]]></system-out>
   </testcase>
-  <testcase name="testReceiptCantBeApprovedBySalesperson" classname="project.ReceiptHandlerTest" time="0">
+  <testcase name="testReceiptCantBeApprovedBySalesperson" classname="project.ReceiptHandlerTest" time="0.001">
     <system-out><![CDATA[Receipt 10 handled!
 ]]></system-out>
   </testcase>
-  <testcase name="testReceiptCantBeHandledByManager" classname="project.ReceiptHandlerTest" time="0"/>
-  <testcase name="testListReceiptForAdministrator" classname="project.ReceiptHandlerTest" time="0"/>
-  <testcase name="testApproveRejectHandleThrowWhenReceiptMissing" classname="project.ReceiptHandlerTest" time="0.001">
+  <testcase name="testReceiptCantBeHandledByManager" classname="project.ReceiptHandlerTest" time="0.001"/>
+  <testcase name="testListReceiptForAdministrator" classname="project.ReceiptHandlerTest" time="0.001"/>
+  <testcase name="testApproveRejectHandleThrowWhenReceiptMissing" classname="project.ReceiptHandlerTest" time="0.002">
     <system-out><![CDATA[Receipt 999 not found
 Receipt 999 not found
 Receipt 999 not found
 ]]></system-out>
   </testcase>
-  <testcase name="testListReceiptForManager" classname="project.ReceiptHandlerTest" time="0.002">
+  <testcase name="testListReceiptForManager" classname="project.ReceiptHandlerTest" time="0.001">
     <system-out><![CDATA[Receipt 15 handled!
 Receipt 16 handled!
 Receipt 16 approved!
 ]]></system-out>
   </testcase>
-  <testcase name="testManagerCantRejectOwnReceipt" classname="project.ReceiptHandlerTest" time="0">
+  <testcase name="testManagerCantRejectOwnReceipt" classname="project.ReceiptHandlerTest" time="0.001">
     <system-out><![CDATA[Receipt 17 handled!
 ]]></system-out>
   </testcase>
@@ -120,7 +120,7 @@ Receipt 19 approved!
 Receipt 20 approved!
 ]]></system-out>
   </testcase>
-  <testcase name="testRejectReceiptThrowsIfUnauthorized" classname="project.ReceiptHandlerTest" time="0">
+  <testcase name="testRejectReceiptThrowsIfUnauthorized" classname="project.ReceiptHandlerTest" time="0.001">
     <system-out><![CDATA[Receipt 21 handled!
 ]]></system-out>
   </testcase>
@@ -135,15 +135,15 @@ Reason: bad
     <system-out><![CDATA[Receipt 24 handled!
 ]]></system-out>
   </testcase>
-  <testcase name="testListReceiptForAccountant" classname="project.ReceiptHandlerTest" time="0.001">
+  <testcase name="testListReceiptForAccountant" classname="project.ReceiptHandlerTest" time="0">
     <system-out><![CDATA[Receipt 26 handled!
 Receipt 27 handled!
 Receipt 27 approved!
 ]]></system-out>
   </testcase>
-  <testcase name="testReceiptIdUnique" classname="project.ReceiptHandlerTest" time="0.001"/>
-  <testcase name="testReceiptCantBeHandledBySalesperson" classname="project.ReceiptHandlerTest" time="0.001"/>
-  <testcase name="testReceiptCantBeRejectedBySalesperson" classname="project.ReceiptHandlerTest" time="0.001">
+  <testcase name="testReceiptIdUnique" classname="project.ReceiptHandlerTest" time="0"/>
+  <testcase name="testReceiptCantBeHandledBySalesperson" classname="project.ReceiptHandlerTest" time="0"/>
+  <testcase name="testReceiptCantBeRejectedBySalesperson" classname="project.ReceiptHandlerTest" time="0">
     <system-out><![CDATA[Receipt 31 handled!
 ]]></system-out>
   </testcase>
